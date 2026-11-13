@@ -77,7 +77,7 @@ The JSONL example deliberately records an unresolved denied decision: integrity 
 
 Fonts are served locally through Fontsource. The animated governance flow and code panels are labelled as illustrations, not live product output or executable VSL syntax.
 
-Contact links open an email application addressed to `hello@supersemantics.org`. There is deliberately no contact form or submission backend. Scanner, GitHub, and Zenodo links point to the existing external services.
+The homepage's floating **Contact us** button opens a keyboard-accessible form for name, email address, optional company, and message. **Open email draft** validates the required fields and opens the visitor's configured email application with the details addressed to `hello@supersemantics.org`. The visitor must review and send the draft; the website does not send, store, or confirm delivery of messages. If no email app opens, the form retains the details for copying and provides the direct email address. Existing contact links still open a blank email. There is no submission backend. Scanner, GitHub, and Zenodo links point to the existing external services.
 
 Keyboard users can navigate lifecycle tabs with Left/Right and use-case tabs with Up/Down; Home/End select the first/last item. The mobile menu supports Escape and returns focus to its toggle.
 

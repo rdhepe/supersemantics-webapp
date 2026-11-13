@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import type { KeyboardEvent, ReactNode } from 'react'
+import type { FormEvent, KeyboardEvent, ReactNode } from 'react'
 import { AnimatePresence, motion, useInView } from 'motion/react'
 import { Link } from 'react-router-dom'
 import {
   ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, BookOpen, Check, CheckCheck,
-  ChevronRight, Code2, Fingerprint, GitBranch, Menu, Plus,
+  ChevronRight, Code2, Fingerprint, GitBranch, Mail, Menu, Plus,
   ScanLine, ShieldCheck, X,
 } from 'lucide-react'
 import { links, navigation, research, stages, useCases } from './content'
@@ -374,6 +374,84 @@ function Footer() {
   )
 }
 
+function ContactForm() {
+  const dialog = useRef<HTMLDialogElement>(null)
+  const launcher = useRef<HTMLButtonElement>(null)
+  const [draftOpened, setDraftOpened] = useState(false)
+
+  function openEmail(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const form = event.currentTarget
+    const requiredFields = form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[required]')
+    for (const field of requiredFields) {
+      field.setCustomValidity(field.value.trim() ? '' : 'Please fill out this field.')
+    }
+    if (!form.reportValidity()) return
+
+    const details = new FormData(form)
+    const name = String(details.get('name')).trim()
+    const email = String(details.get('email')).trim()
+    const company = String(details.get('company')).trim()
+    const message = String(details.get('message')).trim()
+    const body = [
+      `Name: ${name}`,
+      `Email: ${email}`,
+      ...(company ? [`Company: ${company}`] : []),
+      '',
+      message,
+    ].join('\r\n')
+    window.location.href = `${links.email}?subject=${encodeURIComponent('Website enquiry')}&body=${encodeURIComponent(body)}`
+    setDraftOpened(true)
+  }
+
+  return (
+    <>
+      <button ref={launcher} className="contact-launcher" type="button" aria-haspopup="dialog" aria-controls="contact-dialog"
+        onClick={() => {
+          setDraftOpened(false)
+          dialog.current?.showModal()
+          dialog.current?.querySelector<HTMLInputElement>('input')?.focus()
+        }}>
+        <Mail size={20} aria-hidden="true" /><span>Contact us</span>
+      </button>
+      <dialog ref={dialog} id="contact-dialog" className="contact-dialog" aria-labelledby="contact-form-heading"
+        aria-describedby="contact-form-description" data-lenis-prevent=""
+        onClose={() => launcher.current?.focus()}
+        onKeyDown={event => {
+          if (event.key === 'Escape') { event.preventDefault(); dialog.current?.close() }
+        }}>
+        <div className="contact-dialog-header">
+          <div><span className="mono">LET’S TALK</span><h2 id="contact-form-heading">Contact us</h2></div>
+          <button className="contact-close" type="button" aria-label="Close contact form" onClick={() => dialog.current?.close()}>
+            <X size={22} aria-hidden="true" />
+          </button>
+        </div>
+        <p id="contact-form-description">Tell us what you’re building. We’ll prepare an email to hello@supersemantics.org in your email app.</p>
+        <form className="contact-form" onSubmit={openEmail} onInput={event => {
+          const field = event.target
+          if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement) field.setCustomValidity('')
+        }}>
+          <label htmlFor="contact-name">Name <span>(required)</span>
+            <input id="contact-name" name="name" autoComplete="name" required maxLength={100} />
+          </label>
+          <label htmlFor="contact-email">Email address <span>(required)</span>
+            <input id="contact-email" name="email" type="email" autoComplete="email" required maxLength={254} />
+          </label>
+          <label htmlFor="contact-company">Company <span>(optional)</span>
+            <input id="contact-company" name="company" autoComplete="organization" maxLength={120} />
+          </label>
+          <label htmlFor="contact-message">Message <span>(required)</span>
+            <textarea id="contact-message" name="message" rows={4} required maxLength={1500} />
+          </label>
+          <p className="contact-form-note">Nothing is sent or stored by this website. An email app must be configured; review the draft and press Send there.</p>
+          <button className="button button-lime" type="submit">Open email draft <Mail size={17} aria-hidden="true" /></button>
+          <p role="status" className="contact-form-status">{draftOpened && <>Email app requested. Your message has not been sent. If no draft opened, email <a href={links.email}>hello@supersemantics.org</a> directly. Your details remain here so you can copy them.</>}</p>
+        </form>
+      </dialog>
+    </>
+  )
+}
+
 function App() {
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
@@ -386,7 +464,7 @@ function App() {
     <PageMotion>
       <ScrollExperience />
       <a className="skip-link" href="#main">Skip to content</a>
-      <div id="top" tabIndex={-1}><Header /><main id="main" tabIndex={-1}><Hero /><MotionMarquee /><Manifesto /><Lifecycle /><UseCases /><Research /><About /><Contact /></main><Footer /></div>
+      <div id="top" tabIndex={-1}><Header /><main id="main" tabIndex={-1}><Hero /><MotionMarquee /><Manifesto /><Lifecycle /><UseCases /><Research /><About /><Contact /></main><Footer /><ContactForm /></div>
     </PageMotion>
   )
 }
