@@ -51,7 +51,7 @@ function Header() {
         <Brand />
         <nav className="desktop-nav" aria-label="Main navigation">
           {navigation.map(item => <a key={item.href} href={item.href}>{item.label}</a>)}
-          <Link to="/docs" className="documentation-link">Docs <BookOpen size={13} aria-hidden="true" /></Link>
+          <Link to="/docs" className="documentation-link">Docs</Link>
         </nav>
         <a className="button button-lime header-cta" href={links.scan}>Scan your code <Arrow diagonal /></a>
         <button ref={toggleRef} className="menu-toggle" type="button" aria-expanded={open}
