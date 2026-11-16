@@ -11,6 +11,7 @@ export const navigation = [
   { label: 'Use cases', href: '#use-cases' },
   { label: 'Research', href: '#research' },
   { label: 'About', href: '#about' },
+  { label: 'Blogs', href: '#blogs' },
 ]
 
 export const stages = [

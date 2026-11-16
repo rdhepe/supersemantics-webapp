@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import type { FormEvent, KeyboardEvent, ReactNode } from 'react'
 import { AnimatePresence, motion, useInView } from 'motion/react'
 import { Link } from 'react-router-dom'
@@ -11,6 +11,9 @@ import { links, navigation, research, stages, useCases } from './content'
 import { MotionToggle, PageMotion, Parallax, Reveal, ScrollExperience, TextReveal } from './motion'
 import { usePageMotion } from './motion-preference'
 import Brand from './Brand'
+import BlogErrorBoundary from './blogs/BlogErrorBoundary'
+
+const BlogPreview = lazy(() => import('./blogs/BlogCards').then(module => ({ default: module.BlogPreview })))
 
 const copyrightYear = new Date().getFullYear()
 
@@ -464,7 +467,7 @@ function App() {
     <PageMotion>
       <ScrollExperience />
       <a className="skip-link" href="#main">Skip to content</a>
-      <div id="top" tabIndex={-1}><Header /><main id="main" tabIndex={-1}><Hero /><MotionMarquee /><Manifesto /><Lifecycle /><UseCases /><Research /><About /><Contact /></main><Footer /><ContactForm /></div>
+      <div id="top" tabIndex={-1}><Header /><main id="main" tabIndex={-1}><Hero /><MotionMarquee /><Manifesto /><Lifecycle /><UseCases /><Research /><About /><BlogErrorBoundary><Suspense fallback={<section id="blogs" tabIndex={-1} className="section-space container" role="status">Loading blogs...</section>}><BlogPreview /></Suspense></BlogErrorBoundary><Contact /></main><Footer /><ContactForm /></div>
     </PageMotion>
   )
 }

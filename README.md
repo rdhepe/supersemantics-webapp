@@ -16,12 +16,50 @@ npm run build
 npm run typecheck
 npm run lint
 npm run test:docs
+npm run test:blogs
 npm run preview
 ```
 
-The build command checks TypeScript before generating `dist`. Deploy the contents of `dist` to a static host. No server, API keys, or environment variables are required.
+The build command validates blog content and checks TypeScript before generating `dist`. Deploy the contents of `dist` to a static host. No server, API keys, or environment variables are required.
 
-The site uses client-side routes. Configure your host to serve `index.html` for non-file requests, including `/docs` and `/docs/*`, so direct links and refreshes work. Existing asset requests must still resolve to their actual files.
+The site uses client-side routes. Configure your host to serve `index.html` for non-file requests, including `/docs`, `/docs/*`, `/blogs`, and `/blogs/*`, so direct links and refreshes work. Existing asset requests must still resolve to their actual files.
+
+## Blogs: publishing a Markdown file
+
+Add a file directly inside `src/blogs/posts`, using a lowercase filename ending in `.md` or `.MD`. Separate words with spaces or hyphens; spaces become hyphens in URLs, so `my-article copy.md` appears at `/blogs/my-article-copy`. Filenames must produce unique URLs. No route, index, or component edits are needed.
+
+Start with this format:
+
+```md
+---
+title: "My article"
+description: "A short summary shown on blog cards."
+author: "Author name"
+date: "2026-11-14"
+---
+
+## Introduction
+
+Write your article in Markdown.
+```
+
+All four metadata fields are required. Dates must be valid `YYYY-MM-DD` calendar dates; quote metadata strings. Invalid metadata, empty articles, and duplicate URLs fail `npm run test:blogs` and `npm run build`. During development, blog loading errors display an explicit message without blanking the homepage; correct the file and reload the page. Articles are sorted newest first, with the latest three shown on the homepage. Dates are informational, not a scheduling mechanism: every file in this directory is public content, including future-dated articles.
+
+Headings, lists, links, images, blockquotes, and fenced code blocks are supported. Raw HTML is omitted and unsafe link protocols are blocked by the Markdown renderer. MDX, embedded scripts, and GitHub-specific Markdown extensions such as tables are not supported. Put images in `public/blogs` and reference them with absolute paths, for example `![Diagram description](/blogs/diagram.png)`. Use `/docs` or `/blogs/article-slug` for internal page links; relative `.md` links are not rewritten.
+
+During development, Vite automatically discovers added files. On the deployed website, merge the article into `main`, then rebuild and deploy the site through your existing hosting process. This change does not configure automatic deployment. Removing a file removes its article on the next deployment; changing its filename changes its URL. Blog pages are client-rendered like the rest of this site; per-article social previews and prerendered SEO pages are not generated.
+
+### Restricting publishing to selected company members
+
+Publishing access is controlled in GitHub, not by the article's `author` field or a website login:
+
+1. Give repository write access only to approved company contributors and maintainers. Others can propose pull requests but cannot publish them.
+2. Protect `main` with a repository ruleset requiring pull requests and at least one approval. Restrict bypass permissions and publication merges to designated maintainers where your GitHub plan supports it.
+3. Require the **Validate website** status check before merging. `.github/workflows/validate.yml` runs the blog validation, production build, lint, and documentation tests on pull requests and pushes to `main`. Review article content and any code, dependency, or workflow changes.
+4. Add a `CODEOWNERS` entry for `/src/blogs/posts/` using your actual approved reviewers, and require code-owner reviews in the ruleset. Protect the ownership and workflow configuration too.
+5. Deploy production only from reviewed `main` commits. Do not give untrusted pull-request builds production deployment credentials.
+
+An administrator must configure these GitHub settings; this implementation does not grant access or enforce branch protection automatically. Drafts and pull requests in a public repository are publicly visible, and published content remains in Git history. Keep confidential drafts outside public repositories.
 
 ## Python developer documentation
 

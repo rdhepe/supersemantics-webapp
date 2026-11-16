@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run test:blogs && tsc -b && vite build",
     "lint": "oxlint",
     "test:docs": "node --test scripts/test-docs.mjs",
+    "test:blogs": "node --test scripts/test-blogs.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -b"
   },
@@ -21,8 +22,10 @@
     "prism-react-renderer": "^2.4.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.18.5",
-    "tailwindcss": "^4.3.4"
+    "tailwindcss": "^4.3.4",
+    "yaml": "^2.8.1"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
