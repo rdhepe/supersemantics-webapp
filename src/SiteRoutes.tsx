@@ -18,6 +18,7 @@ export default function SiteRoutes() {
       <Route path="/blogs/:slug" element={<BlogErrorBoundary><Blogs /></BlogErrorBoundary>} />
       <Route path="/docs/:slug?" element={<Documentation />} />
       <Route path="/docs/typescript/:slug?" element={<Documentation track="typescript" />} />
+      <Route path="/docs/dotnet/:slug?" element={<Documentation track="dotnet" />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </Suspense>

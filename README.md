@@ -1,6 +1,6 @@
 # Super Semantics
 
-A responsive website with Python and TypeScript/JavaScript developer documentation for Super Semantics, built with React, TypeScript, Vite, Tailwind CSS, and Motion.
+A responsive website with Python, TypeScript/JavaScript, and C#/.NET developer documentation for Super Semantics, built with React, TypeScript, Vite, Tailwind CSS, and Motion.
 
 ## Development
 
@@ -79,7 +79,7 @@ python -m unittest discover -s src/docs/examples -p "test_*.py" -v
 
 The examples were verified against upstream VSL-Core 0.3.1 source. The configured package mirror did not provide the distribution during development, so validation used the upstream checkout's `src` directory on `PYTHONPATH`, not an installed distribution. Framework snippets describe integration wiring, not fully configured live agents.
 
-`npm run test:docs` checks both tracks' route/anchor uniqueness, internal links, isolated search indexes, and agreement between displayed and downloadable examples without requiring the governance libraries.
+`npm run test:docs` checks all tracks' route/anchor uniqueness, internal links, isolated search indexes, and agreement between displayed and downloadable examples without requiring the governance libraries.
 
 ## TypeScript / JavaScript developer documentation
 
@@ -103,6 +103,28 @@ node --test test_gates.mjs
 Core examples were compiled and executed against downloaded VSL-Corejs source with manifest version 0.2.2, using existing local TypeScript/Node tooling without installing packages. Public npm access was blocked by IT policy, so registry publication and registry-based installation were not verified. LangGraph.js 0.1.1 guidance was reviewed against upstream source, not run as a live graph; it explicitly documents the adapter's pinned older core dependency, caller-owned logging/retries, and fresh-denial-state requirements.
 
 The JSONL example deliberately records an unresolved denied decision: integrity passes while lifecycle audit fails. Its persistent file must not be shared by multiple Node processes. None of the examples equates a valid hash chain, conformance, or an assurance declaration with independently verified compliance.
+
+## C# / .NET developer documentation
+
+Open `/docs/dotnet` for eight guides covering .NET 10 setup, first gates, strict Gamma thresholds, persistent evidence, testing, Microsoft Agent Framework integration, and API troubleshooting. The language selector preserves the equivalent lesson where available; Python-only lessons fall back to the selected track's introduction. Existing Python and TS/JS URLs are unchanged.
+
+- [src/docs/dotnet.ts](src/docs/dotnet.ts): source-backed C# guides with commit-pinned upstream references.
+- [src/docs/examples/dotnet](src/docs/examples/dotnet): a six-file .NET 10 console project. The displayed source and download links use these same files.
+- [src/docs/Documentation.tsx](src/docs/Documentation.tsx): shared navigation, search, code copying, and C# syntax highlighting. The additional Prism grammar does not replace existing language grammars.
+
+Download all six files into a separate directory before building: `VslGuide.csproj`, `Program.cs`, `RefundPolicy.cs`, `ThresholdPolicy.cs`, `LedgerEvidence.cs`, and `GateChecks.cs`. Use an approved .NET 10 **SDK**, not only the runtime:
+
+```sh
+dotnet restore
+dotnet run -- first
+dotnet run -- threshold
+dotnet run -- ledger
+dotnet run --configuration Release -- test
+```
+
+The console project's test mode throws on failed checks, including in Release builds; it is not a `dotnet test` project. The ledger lesson appends to `dotnet-decisions.jsonl` in the tutorial working directory and intentionally leaves a denial unresolved: integrity passes while lifecycle audit fails. Test mode uses a unique temporary ledger and cleans up its data and lock file.
+
+The tutorial pins core manifest version 0.1.2, reviewed at commit `b27d7a7ea2183a5239aec12a57d113ccccdf4019`. All four console modes, including the Release-mode checks, were compiled and executed against that source using the installation guide's source-reference path. The configured package mirror did not provide `SuperSemantics.Vsl`, so NuGet publication and registry-based installation remain unverified. The Microsoft Agent Framework adapter was reviewed at `ff554ae19b685445f8561927823ba13a58ad1537`; it builds against core 0.1.1 and `Microsoft.Agents.AI` 1.28.0. Integration snippets require an application-owned `IChatClient`, do not execute real refunds, and were not validated as a live provider integration. For an executable offline framework example, the guide links to the upstream `PurchaseApproval` project.
 
 ## Content and design
 

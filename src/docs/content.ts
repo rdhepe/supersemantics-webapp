@@ -3,7 +3,7 @@ import thresholdGate from './examples/threshold_gate.py?raw'
 import ledgerEvidence from './examples/ledger_evidence.py?raw'
 import gateTests from './examples/test_first_gate.py?raw'
 
-export type CodeLanguage = 'python' | 'typescript' | 'javascript' | 'json' | 'bash' | 'text' | 'yaml'
+export type CodeLanguage = 'python' | 'typescript' | 'javascript' | 'csharp' | 'markup' | 'json' | 'bash' | 'text' | 'yaml'
 export type CodeSample = { label: string; language: CodeLanguage; code: string; download?: string }
 export type DocBlock =
   | { type: 'paragraph'; text: string }
@@ -34,8 +34,8 @@ const examples = {
   tests: new URL('./examples/test_first_gate.py', import.meta.url).href,
 }
 
-export function docHref(slug: string, track: 'python' | 'typescript' = 'python') {
-  const base = track === 'python' ? '/docs' : '/docs/typescript'
+export function docHref(slug: string, track: 'python' | 'typescript' | 'dotnet' = 'python') {
+  const base = track === 'python' ? '/docs' : `/docs/${track}`
   return slug === 'introduction' ? base : `${base}/${slug}`
 }
 
@@ -334,7 +334,7 @@ function blockText(block: DocBlock): string {
   }
 }
 
-export function buildSearchIndex(pages: DocPage[], track: 'python' | 'typescript' = 'python') {
+export function buildSearchIndex(pages: DocPage[], track: 'python' | 'typescript' | 'dotnet' = 'python') {
   return pages.flatMap(page => page.sections.map(section => ({
     title: page.title,
     section: section.title,

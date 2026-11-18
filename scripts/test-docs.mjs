@@ -103,6 +103,65 @@ test('TS and JS downloadable examples match displayed source, including language
   }
 })
 
+test('.NET guides and search stay within their track and resolve every learning link', () => {
+  const { pages, searchIndex } = docTracks.dotnet
+  assert.equal(docHref('introduction', 'dotnet'), '/docs/dotnet')
+  assert.equal(docHref('installation', 'dotnet'), '/docs/dotnet/installation')
+  assert.equal(new Set(pages.map(page => page.slug)).size, pages.length)
+  for (const slug of ['introduction', 'installation', 'first-gate', 'thresholds', 'ledger', 'testing', 'integrations', 'reference']) {
+    assert.ok(pages.some(page => page.slug === slug), `Missing .NET guide: ${slug}`)
+  }
+  for (const page of pages) {
+    assert.ok(page.title && page.description && page.sections.length && page.sources.length)
+    assert.equal(new Set(page.sections.map(section => section.id)).size, page.sections.length)
+    for (const section of page.sections) {
+      assert.match(section.id, /^[a-z0-9-]+$/)
+      assert.ok(section.blocks.length)
+      for (const block of section.blocks) {
+        if (block.type !== 'links') continue
+        for (const item of block.items) {
+          if (item.href.startsWith('/')) {
+            assert.ok(item.href.startsWith('/docs/dotnet'), item.href)
+            assert.ok(destinations.has(item.href), item.href)
+          }
+        }
+      }
+    }
+    for (const source of page.sources) {
+      const url = new URL(source.href)
+      assert.equal(url.hostname, 'github.com')
+      assert.match(url.pathname, /^\/supersemantics\/VSL-(Core|Microsoft-agent-framework)\.NET\//)
+    }
+  }
+  assert.equal(searchIndex.length, pages.reduce((count, page) => count + page.sections.length, 0))
+  for (const entry of searchIndex) {
+    assert.ok(entry.href.startsWith('/docs/dotnet'), entry.href)
+    assert.ok(destinations.has(entry.href), entry.href)
+    assert.equal(entry.text, entry.text.toLowerCase())
+    assert.ok(entry.text.includes(entry.section.toLowerCase()))
+  }
+  for (const term of ['invariantviolationexception', 'usevslgates', 'net10.0', 'vslgatedeniedexception', 'maxmonitorgapseconds']) {
+    assert.ok(searchIndex.some(entry => entry.text.includes(term)), term)
+  }
+  for (const track of ['python', 'typescript']) {
+    assert.ok(docTracks[track].searchIndex.every(entry => !entry.href.startsWith('/docs/dotnet')))
+  }
+})
+
+test('.NET downloads contain the complete console project and match displayed source', async () => {
+  const blocks = docTracks.dotnet.pages.flatMap(page => page.sections.flatMap(section =>
+    section.blocks.filter(block => block.type === 'code' && block.download),
+  ))
+  const expectedFiles = ['VslGuide.csproj', 'Program.cs', 'RefundPolicy.cs', 'ThresholdPolicy.cs', 'LedgerEvidence.cs', 'GateChecks.cs']
+  assert.deepEqual(blocks.map(block => block.sample.label).sort(), expectedFiles.sort())
+  for (const block of blocks) {
+    const { label, language, code } = block.sample
+    assert.equal(language, label.endsWith('.cs') ? 'csharp' : 'markup')
+    assert.ok(block.download.includes(label), block.download)
+    assert.equal(code, await readFile(new URL(`../src/docs/examples/dotnet/${label}`, import.meta.url), 'utf8'))
+  }
+})
+
 test('downloadable Python examples match their displayed source', async () => {
   const examples = docPages.flatMap(page => page.sections.flatMap(section =>
     section.blocks.filter(block => block.type === 'code' && block.download),

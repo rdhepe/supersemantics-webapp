@@ -1,8 +1,10 @@
 import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import type { KeyboardEvent, ReactNode } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { Highlight } from 'prism-react-renderer'
+import { Highlight, Prism } from 'prism-react-renderer'
 import type { PrismTheme } from 'prism-react-renderer'
+import extraLanguages from 'prismjs'
+import 'prismjs/components/prism-csharp'
 import { ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, Check, ChevronRight, Code2, Copy, Download, FileCode2, GitFork as Github, Hash, Info, Menu, Search, ShieldCheck, Sparkles, TriangleAlert, X } from 'lucide-react'
 import Brand from '../Brand'
 import { links } from '../content'
@@ -11,6 +13,8 @@ import type { CodeSample, DocBlock, DocPage } from './content'
 import { docTracks } from './tracks'
 import type { DocTrack } from './tracks'
 import './docs.css'
+
+Prism.languages.csharp = extraLanguages.languages.csharp
 
 const codeTheme: PrismTheme = {
   plain: { color: '#d9e3ce', backgroundColor: '#171e15' },
@@ -196,13 +200,13 @@ function Sidebar({ track, current, close }: { track: DocTrack; current: string; 
     <label className="docs-track-picker"><span className="mono">DOCUMENTATION LANGUAGE</span>
       <select aria-label="Documentation language" value={track} onChange={event => {
         const next = event.target.value
-        if (next === 'python' || next === 'typescript') {
+        if (next === 'python' || next === 'typescript' || next === 'dotnet') {
           const nextSlug = docTracks[next].pages.some(page => page.slug === current) ? current : 'introduction'
           navigate(docHref(nextSlug, next))
           close()
         }
       }}>
-        <option value="python">Python</option><option value="typescript">TypeScript / JavaScript</option>
+        <option value="python">Python</option><option value="typescript">TypeScript / JavaScript</option><option value="dotnet">C# / .NET</option>
       </select>
     </label>
     {docGroups.map(group => <div className="docs-nav-group" key={group}><h2 className="mono">{group}</h2>{docPages.filter(page => page.group === group).map(page => (

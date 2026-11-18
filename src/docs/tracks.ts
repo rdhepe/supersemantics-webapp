@@ -1,5 +1,6 @@
 import { buildSearchIndex, docPages } from './content'
 import { typescriptPages } from './typescript'
+import { dotnetPages } from './dotnet'
 
 export const docTracks = {
   python: {
@@ -9,6 +10,10 @@ export const docTracks = {
   typescript: {
     label: 'TypeScript / JavaScript', badge: 'TS / JS', runtime: 'Node.js 22 LTS · TS / JS',
     pages: typescriptPages, searchIndex: buildSearchIndex(typescriptPages, 'typescript'),
+  },
+  dotnet: {
+    label: 'C# / .NET', badge: 'C# / .NET', runtime: '.NET 10 · C#',
+    pages: dotnetPages, searchIndex: buildSearchIndex(dotnetPages, 'dotnet'),
   },
 }
 
